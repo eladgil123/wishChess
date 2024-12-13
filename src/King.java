@@ -43,6 +43,7 @@ public class King extends Piece{
                 }
         {
             if (this.isWhite()) {
+
                 if (!this.didMove && board[0][5] == null && board[0][6] == null &&board[0][7]!=null&& !board[0][7].isDidMove()) {
                     this.moves[0][6] = true;
                     for (int i = 4; i < 7; i++)
