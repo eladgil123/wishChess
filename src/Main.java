@@ -35,11 +35,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        startMenue sm=new startMenue();
         final boolean[] flip = {true};
         JFrame frame=new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setBackground(Color.black);
-        Board board = new Board();
+         Board b = new Board();
 
         JPanel mainP=new JPanel();
 
@@ -53,7 +54,7 @@ public class Main {
                 bg[i][j].setOpaque(true);
                 mainP.add(bg[i][j]);
             }
-        setBoardLabels(bg,board, flip[0]);
+        setBoardLabels(bg,b, flip[0]);
         mainP.setPreferredSize(new Dimension(800,800));
         mainP.setLayout(null);
 
@@ -73,7 +74,7 @@ public class Main {
         MouseListener listener =new MouseListener(){
             int lastClick =-1;
             int movesC=0;
-
+            Board board=b;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -151,14 +152,38 @@ public class Main {
                     return;
                 }
                 movesC++;
-                if((movesC%2==0&&!Utils.isThereMove(board,true)))
+                if((movesC%2==0&&!Utils.isThereMove(board,true))) {
+                    if (Utils.canBeTaken(board.board, board.wkl / 10, board.wkl % 10, true)) {
+                        sm.setLabel("black won");
+                    }else
+                        sm.setLabel("stalemate");
+                    setBoardLabels(bg, board, flip[0]);
+                    lastClick = -1;
+                    sm.setVisible(true);
+                    movesC = 0;
+                    flip[0] = movesC % 2 == 0;
+                    board = new Board();
+                    setBoardLabels(bg, board, flip[0]);
+                    return;
+                }else if((movesC%2!=0&&!Utils.isThereMove(board,false))) {
+                    if (Utils.canBeTaken(board.board, board.bkl / 10, board.bkl % 10, false)) {
+                        sm.setLabel("white won");
+                    } else
+                        sm.setLabel("stalemate");
+                    setBoardLabels(bg, board, flip[0]);
+                    lastClick = -1;
+                    sm.setVisible(true);
+                    movesC = 0;
+                    flip[0] = movesC % 2 == 0;
+                    board = new Board();
+                    setBoardLabels(bg, board, flip[0]);
+                    return;
+                }
 
                 System.out.println(board.lastMove);
-
                 flip[0] =movesC%2==0;
                 setBoardLabels(bg,board, flip[0]);
                 lastClick =-1;
-
             }
 
             @Override
