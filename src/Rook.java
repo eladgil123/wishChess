@@ -1,6 +1,8 @@
 public class Rook extends Piece {
+
     public Rook(boolean isWhite){
         super(isWhite);
+        v=5;
     }
     public Rook copy(){
         Rook p=new Rook(isWhite);

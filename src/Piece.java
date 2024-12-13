@@ -1,4 +1,5 @@
 public abstract class Piece {
+    int v;
     protected boolean[][] moves;
     protected boolean isWhite,didMove;
     public abstract void reCheckMoves(Piece[][] board,int row,int column,int wkl,int bkl,int lastMove);
@@ -36,5 +37,8 @@ public abstract class Piece {
         System.out.print("  ");
         for(int i=1;i<=8;i++)
             System.out.print(+i + "  ");
+    }
+    public int getValue(){
+        return this.v;
     }
 }

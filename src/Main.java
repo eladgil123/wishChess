@@ -70,55 +70,64 @@ public class Main {
         frame.setTitle("The Real Chess.com");
 
         frame.setVisible(true);
+        int m=0;
+        if(sm.isPB){
+            BetterStockFish.botMove(b,true);
+            m=1;
+            flip[0]=m%2==0;
+            setBoardLabels(bg, b, flip[0]);
+        }
 
+        int finalM = m;
         MouseListener listener =new MouseListener(){
             int lastClick =-1;
-            int movesC=0;
+            int movesC= finalM;
             Board board=b;
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                boolean isQ=false;
-                int x=e.getX()/100,y=e.getY()/100;
-                if(flip[0])
-                    y=7-y;
+                boolean isQ = false;
+                int x = e.getX() / 100, y = e.getY() / 100;
+                if (flip[0])
+                    y = 7 - y;
                 else
-                    x=7-x;
+                    x = 7 - x;
 
-                if(lastClick ==-1) {
-                    if(board.board[y][x]==null|| ((movesC%2==0)!=board.board[y][x].isWhite)) {
+                if (lastClick == -1) {
+                    if (board.board[y][x] == null || ((movesC % 2 == 0) != board.board[y][x].isWhite)) {
                         return;
                     }
-                    lastClick =(y)*10+x;
-                    board.board[y][x].reCheckMoves(board.board, y,x,board.wkl,board.bkl,board.lastMove);
+                    lastClick = (y) * 10 + x;
+                    board.board[y][x].reCheckMoves(board.board, y, x, board.wkl, board.bkl, board.lastMove);
                     boolean[][] moves = board.board[y][x].getMoves();
-                    if(flip[0]) {
+                    if (flip[0]) {
                         for (int i = 0; i < 8; i++)
                             for (int j = 0; j < 8; j++)
-                                bg[7 - i ][j].setDavid(moves[i][j]);
-                    }else{
+                                bg[7 - i][j].setDavid(moves[i][j]);
+                    } else {
                         for (int i = 0; i < 8; i++)
                             for (int j = 0; j < 8; j++)
-                                bg[i ][7-j].setDavid(moves[i][j]);
+                                bg[i][7 - j].setDavid(moves[i][j]);
                     }
                     return;
                 }
-                if(board.board[lastClick/10][lastClick%10] instanceof Pawn&&(y==0||y==7)&&board.board[lastClick/10][lastClick%10].getMoves()[y][x]&&((movesC%2==0&&board.board[lastClick/10][lastClick%10].isWhite())||(movesC%2!=0&&!board.board[lastClick/10][lastClick%10].isWhite()))){
-                    Queening q=new Queening(board.board[lastClick/10][lastClick%10].isWhite());
-                    System.out.println();board.move(lastClick /10, lastClick %10,y,x,q.prom);
-                    isQ=true;
+                if (board.board[lastClick / 10][lastClick % 10] instanceof Pawn && (y == 0 || y == 7) && board.board[lastClick / 10][lastClick % 10].getMoves()[y][x] && ((movesC % 2 == 0 && board.board[lastClick / 10][lastClick % 10].isWhite()) || (movesC % 2 != 0 && !board.board[lastClick / 10][lastClick % 10].isWhite()))) {
+                    Queening q = new Queening(board.board[lastClick / 10][lastClick % 10].isWhite());
+                    System.out.println();
+                    board.move(lastClick / 10, lastClick % 10, y, x, q.prom);
+                    isQ = true;
 
                 }
-                if(flip[0]) {
+                if (flip[0]) {
                     for (int i = 0; i < 8; i++)
                         for (int j = 0; j < 8; j++)
-                            bg[7 - i ][j].setDavid(false);
-                }else{
+                            bg[7 - i][j].setDavid(false);
+                } else {
                     for (int i = 0; i < 8; i++)
                         for (int j = 0; j < 8; j++)
-                            bg[i ][7-j].setDavid(false);
+                            bg[i][7 - j].setDavid(false);
                 }
-                if(!isQ) {
+                if (!isQ) {
                     if (!board.move(lastClick / 10, lastClick % 10, y, x)) {
                         if (board.board[y][x] != null && ((movesC % 2 == 0 && board.board[y][x].isWhite()) || (movesC % 2 != 0 && !board.board[y][x].isWhite()))) {
                             lastClick = (y) * 10 + x;
@@ -139,11 +148,10 @@ public class Main {
                         return;
                     }
                 }
-                movesC++;
-                if((movesC%2==0&&!Utils.isThereMove(board,true))) {
+                if ((movesC % 2 == 0 && !Utils.isThereMove(board, true))) {
                     if (Utils.canBeTaken(board.board, board.wkl / 10, board.wkl % 10, true)) {
                         sm.setLabel("black won");
-                    }else
+                    } else
                         sm.setLabel("stalemate");
                     setBoardLabels(bg, board, flip[0]);
                     lastClick = -1;
@@ -153,7 +161,7 @@ public class Main {
                     board = new Board();
                     setBoardLabels(bg, board, flip[0]);
                     return;
-                }else if((movesC%2!=0&&!Utils.isThereMove(board,false))) {
+                } else if ((movesC % 2 != 0 && !Utils.isThereMove(board, false))) {
                     if (Utils.canBeTaken(board.board, board.bkl / 10, board.bkl % 10, false)) {
                         sm.setLabel("white won");
                     } else
@@ -169,9 +177,17 @@ public class Main {
                 }
 
                 System.out.println(board.lastMove);
-                flip[0] =movesC%2==0;
-                setBoardLabels(bg,board, flip[0]);
-                lastClick =-1;
+                movesC ++;
+                flip[0] = movesC % 2 == 0;
+                setBoardLabels(bg, board, flip[0]);
+                lastClick = -1;
+
+                BetterStockFish.botMove(board, movesC%2==0);
+                movesC ++;
+                flip[0] = movesC % 2 == 0;
+                setBoardLabels(bg, board, flip[0]);
+                System.out.println(BetterStockFish.boardValue(board));
+                System.out.println(movesC);
             }
 
             @Override

@@ -34,6 +34,12 @@ public class Board {
                 if (this.board[i][j] != null)
                     this.board[i][j].reCheckMoves(this.board, i, j, this.wkl, this.bkl, this.lastMove);
     }
+    public Board(Board b){
+        this.board=b.boardCopy();
+        this.bkl=b.bkl;
+        this.wkl=b.wkl;
+        this.lastMove=b.lastMove;
+    }
 
     public boolean move(int rs, int cs, int rt, int ct) {
         if (this.board[rs][cs] == null)
@@ -166,6 +172,14 @@ public class Board {
             this.lastMove = rs * 1000 + cs * 100 + rt * 10 + ct;
             return true;
 
+    }
+    public Piece[][] boardCopy(){
+        Piece[][] p= new Piece[8][8];
+        for(int i=0;i<8;i++)
+            for(int j=0;j<8;j++)
+                if(board[i][j]!=null)
+                    p[i][j]=board[i][j].copy();
+        return p;
     }
 }
 

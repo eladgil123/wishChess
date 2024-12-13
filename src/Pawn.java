@@ -1,6 +1,8 @@
 public class Pawn extends Piece{
+
     public Pawn(boolean isWhite){
         super(isWhite);
+        v=1;
     }
     public Pawn copy(){
         Pawn p=new Pawn(isWhite);
@@ -65,17 +67,29 @@ public class Pawn extends Piece{
         for(int i=0;i<8;i++)
             for(int j=0;j<8;j++)
                 if(this.moves[i][j]){
+                    boolean up=false;
                     Piece temp=board[i][j];
                     board[i][j]=board[row][column];
                     board[row][column]=null;
+                    if (column != j && board[i][j] == null) {
+                            temp=board[i][column];
+                            board[i][column] = null;
+                            up=true;
+                        }
                     if(this.isWhite) {
                         if (Utils.canBeTaken(board, wkl / 10, wkl % 10, true))
                             this.moves[i][j] = false;
                     }
                     else if(Utils.canBeTaken(board,bkl/10,bkl%10,false))
                         this.moves[i][j]=false;
-                    board[row][column]=board[i][j];
-                    board[i][j]=temp;
+                    if (up) {
+                        board[row][column]=board[i][j];
+                        board[i][column] = temp;
+                        board[i][j] = null;
+                    }else {
+                        board[row][column] = board[i][j];
+                        board[i][j] = temp;
+                    }
                 }
     }
     public String toString(){

@@ -1,6 +1,8 @@
 public class Bishop extends Piece{
+
     public Bishop(boolean isWhite){
         super(isWhite);
+        v=3;
     }
     public Bishop copy(){
         Bishop p=new Bishop(isWhite);

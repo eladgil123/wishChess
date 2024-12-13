@@ -1,6 +1,8 @@
 public class Queen extends Piece{
+
     public Queen(boolean isWhite){
         super(isWhite);
+        v=9;
     }
     public Queen copy() {
         Queen p = new Queen(isWhite);
