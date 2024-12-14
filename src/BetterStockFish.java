@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
 public class BetterStockFish {
    public static  int boardValue(Board b,boolean isWhite){
        int sum=0;
@@ -75,6 +79,8 @@ public class BetterStockFish {
         return maxV;
     }
     public static void botMove(Board b,boolean isWhite){
+        ExecutorService executorService = Executors.newFixedThreadPool(12); // Create a thread pool with 4 threads
+        List<Callable<Result>> tasks = new ArrayList<>();
        int bestM=0,bestV=isWhite? -10000:10000;
         for(int i=0;i<8;i++) {
             for (int j = 0; j < 8; j++) {
@@ -91,25 +97,58 @@ public class BetterStockFish {
                                 board.move(i, j, k, s, 1);
                             else
                                 board.move(i, j, k, s);
-
-                            int v = minimax(board,!isWhite,3,-10000,10000);
                             int mm = 1000*i+100*j+10*k+s;
-                            System.out.println(mm+": "+v);
-
-                            if (isWhite && v >= bestV) {
-                                bestV = v;
-                                bestM = mm;
-                            } else if (!isWhite && bestV >= v) {
-                                bestV = v;
-                                bestM = mm;
-                            }
+                            tasks.add(() -> new Result(mm,  minimax(board,!isWhite,4,-10000,10000)));
                         }
                     }
                 }
             }
         }
+        try {
+            // Submit tasks and collect futures
+            List<Future<Result>> futures = executorService.invokeAll(tasks);
+
+            // Process the results
+            Result maxResult = null;
+            for (Future<Result> future : futures) {
+                Result result = future.get();
+                if (maxResult == null || (isWhite && result.getOutput() > maxResult.getOutput()) || (!isWhite && result.getOutput() < maxResult.getOutput())) {
+                    maxResult = result;
+                }
+            }
+
+            if (maxResult != null) {
+                System.out.println("Input with max output: " + maxResult.getInput());
+                System.out.println("Max output: " + maxResult.getOutput());
+                bestM = maxResult.getInput();
+                if (b.board[bestM/1000][bestM%1000/100] instanceof Pawn && (bestM%100/10 == 0 || bestM%100/10 == 7) )
+                    b.move(bestM/1000,bestM%1000/100,bestM%100/10,bestM%10,1);
+                else
+                    b.move(bestM/1000,bestM%1000/100,bestM%100/10,bestM%10);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            executorService.shutdown(); // Shutdown the executor service
+        }
 
 
-       b.move(bestM/1000,bestM%1000/100,bestM%100/10,bestM%10);
+    }
+    static class Result {
+        private final int input;
+        private final int output;
+
+        public Result(int input, int output) {
+            this.input = input;
+            this.output = output;
+        }
+
+        public int getInput() {
+            return input;
+        }
+
+        public int getOutput() {
+            return output;
+        }
     }
 }
