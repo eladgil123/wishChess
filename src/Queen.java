@@ -6,10 +6,6 @@ public class Queen extends Piece{
     }
     public Queen copy() {
         Queen p = new Queen(isWhite);
-        p.moves=new boolean[8][8];
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                p.moves[i][j] = this.moves[i][j];
         p.didMove=this.didMove;
         return p;
     }

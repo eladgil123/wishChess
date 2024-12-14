@@ -4,11 +4,6 @@ public class King extends Piece{
     }
     public King copy(){
         King p=new King(isWhite);
-        p.moves=new boolean[8][8];
-        for(int i=0;i<8;i++)
-            for(int j=0;j<8;j++)
-                p.moves[i][j]=this.moves[i][j];
-        p.didMove=this.didMove;
         return p;
     }
     @Override
@@ -34,43 +29,38 @@ public class King extends Piece{
                     if (this.isWhite) {
                         if (Utils.canBeTaken(board, i, j, true))
                             this.moves[i][j] = false;
-                    }
-                     else if (Utils.canBeTaken(board, i ,j, false)) {
+                    } else if (Utils.canBeTaken(board, i, j, false)) {
                         this.moves[i][j] = false;
                     }
                     board[row][column] = board[i][j];
                     board[i][j] = temp;
                 }
-        {
-            if (this.isWhite()) {
-                if (!this.didMove && board[0][5] == null && board[0][6] == null &&board[0][7]!=null&& !board[0][7].isDidMove()) {
-                    this.moves[0][6] = true;
-                    for (int i = 4; i < 7; i++)
-                        if (Utils.canBeTaken(board, 0, i, true))
-                            this.moves[0][6] = false;
-                }
-                if (!this.didMove && board[0][3] == null && board[0][2] == null && board[0][1] == null &&board[0][0]!=null&& !board[0][0].isDidMove()) {
-                    this.moves[0][2] = true;
-                    for (int i = 1; i < 5; i++)
-                        if (Utils.canBeTaken(board, 0, i, true))
-                            this.moves[0][2] = false;
-
-                }
-            }
-            else
-            if (!this.didMove && board[7][5] == null && board[7][6] == null &&board[7][7]!=null&& !board[7][7].isDidMove()) {
-                this.moves[7][6] = true;
+        if (this.isWhite()) {
+            if (board[0][4] instanceof King&&!this.didMove && board[0][5] == null && board[0][6] == null && board[0][7] != null && !board[0][7].isDidMove()) {
+                this.moves[0][6] = true;
                 for (int i = 4; i < 7; i++)
-                    if (Utils.canBeTaken(board, 7, i, false))
-                        this.moves[7][6] = false;
+                    if (Utils.canBeTaken(board, 0, i, true))
+                        this.moves[0][6] = false;
             }
-            if (!this.didMove && board[7][3] == null && board[7][2] == null && board[7][1] == null &&board[7][0]!=null&& !board[7][0].isDidMove()) {
-                this.moves[7][2] = true;
+            if (board[0][4] instanceof King&&!this.didMove && board[0][3] == null && board[0][2] == null && board[0][1] == null && board[0][0] != null && !board[0][0].isDidMove()) {
+                this.moves[0][2] = true;
                 for (int i = 1; i < 5; i++)
-                    if (Utils.canBeTaken(board, 7, i, false))
-                        this.moves[7][2] = false;
+                    if (Utils.canBeTaken(board, 0, i, true))
+                        this.moves[0][2] = false;
 
             }
+        } else if (board[7][4] instanceof King&&!this.didMove && board[7][5] == null && board[7][6] == null && board[7][7] != null && !board[7][7].isDidMove()) {
+            this.moves[7][6] = true;
+            for (int i = 4; i < 7; i++)
+                if (Utils.canBeTaken(board, 7, i, false))
+                    this.moves[7][6] = false;
+        }
+        if (board[7][4] instanceof King&&!this.didMove && board[7][3] == null && board[7][2] == null && board[7][1] == null && board[7][0] != null && !board[7][0].isDidMove()) {
+            this.moves[7][2] = true;
+            for (int i = 1; i < 5; i++)
+                if (Utils.canBeTaken(board, 7, i, false))
+                    this.moves[7][2] = false;
+
         }
     }
     public String toString(){

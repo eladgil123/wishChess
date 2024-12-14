@@ -196,13 +196,12 @@ public class Main {
                 flip[0] = movesC % 2 == 0;
                 setBoardLabels(bg, board, flip[0]);
                 lastClick = -1;
+                frame.repaint();
 
                 BetterStockFish.botMove(board, movesC%2==0);
                 movesC ++;
                 flip[0] = movesC % 2 == 0;
                 setBoardLabels(bg, board, flip[0]);
-                System.out.println(BetterStockFish.boardValue(board));
-                System.out.println(movesC);
             }
 
             @Override
