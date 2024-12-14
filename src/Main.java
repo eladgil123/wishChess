@@ -148,7 +148,7 @@ public class Main {
                         return;
                     }
                 }
-                movesC ++;
+                movesC++;
                 if ((movesC % 2 == 0 && !Utils.isThereMove(board, true))) {
                     if (Utils.canBeTaken(board.board, board.wkl / 10, board.wkl % 10, true)) {
                         sm.setLabel("black won");
@@ -161,9 +161,9 @@ public class Main {
                     flip[0] = movesC % 2 == 0;
                     board = new Board();
                     setBoardLabels(bg, board, flip[0]);
-                    if(sm.isPB){
-                        BetterStockFish.botMove(board, movesC%2==0);
-                        movesC ++;
+                    if (sm.isPB) {
+                        BetterStockFish.botMove(board, movesC % 2 == 0);
+                        movesC++;
                         flip[0] = movesC % 2 == 0;
                         setBoardLabels(bg, board, flip[0]);
                     }
@@ -181,9 +181,9 @@ public class Main {
                     flip[0] = movesC % 2 == 0;
                     board = new Board();
                     setBoardLabels(bg, board, flip[0]);
-                    if(sm.isPB){
-                        BetterStockFish.botMove(board, movesC%2==0);
-                        movesC ++;
+                    if (sm.isPB) {
+                        BetterStockFish.botMove(board, movesC % 2 == 0);
+                        movesC++;
                         flip[0] = movesC % 2 == 0;
                         setBoardLabels(bg, board, flip[0]);
                     }
@@ -197,11 +197,51 @@ public class Main {
                 setBoardLabels(bg, board, flip[0]);
                 lastClick = -1;
                 frame.repaint();
-
-                BetterStockFish.botMove(board, movesC%2==0);
-                movesC ++;
+                BetterStockFish.botMove(board, movesC % 2 == 0);
+                movesC++;
                 flip[0] = movesC % 2 == 0;
                 setBoardLabels(bg, board, flip[0]);
+                if ((movesC % 2 == 0 && !Utils.isThereMove(board, true))) {
+                    if (Utils.canBeTaken(board.board, board.wkl / 10, board.wkl % 10, true)) {
+                        sm.setLabel("black won");
+                    } else
+                        sm.setLabel("stalemate");
+                    setBoardLabels(bg, board, flip[0]);
+                    lastClick = -1;
+                    sm.setVisible(true);
+                    movesC = 0;
+                    flip[0] = movesC % 2 == 0;
+                    board = new Board();
+                    setBoardLabels(bg, board, flip[0]);
+                    if (sm.isPB) {
+                        BetterStockFish.botMove(board, movesC % 2 == 0);
+                        movesC++;
+                        flip[0] = movesC % 2 == 0;
+                        setBoardLabels(bg, board, flip[0]);
+                    }
+                    return;
+                } else if ((movesC % 2 != 0 && !Utils.isThereMove(board, false))) {
+                    if (Utils.canBeTaken(board.board, board.bkl / 10, board.bkl % 10, false)) {
+                        sm.setLabel("white won");
+                    } else
+                        sm.setLabel("stalemate");
+                    setBoardLabels(bg, board, flip[0]);
+                    lastClick = -1;
+                    System.out.println(movesC);
+                    sm.setVisible(true);
+                    movesC = 0;
+                    flip[0] = movesC % 2 == 0;
+                    board = new Board();
+                    setBoardLabels(bg, board, flip[0]);
+                    if (sm.isPB) {
+                        BetterStockFish.botMove(board, movesC % 2 == 0);
+                        movesC++;
+                        flip[0] = movesC % 2 == 0;
+                        setBoardLabels(bg, board, flip[0]);
+                    }
+
+                    return;
+                }
             }
 
             @Override

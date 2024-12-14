@@ -1,6 +1,7 @@
 public class King extends Piece{
     public King(boolean isWhite){
         super(isWhite);
+        v=1000;
     }
     public King copy(){
         King p=new King(isWhite);

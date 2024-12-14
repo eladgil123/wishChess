@@ -3,6 +3,7 @@
 public class Board {
     Piece[][] board;
     int wkl, bkl, lastMove;
+    boolean isOver;
 
     public Board() {
         this.board = new Piece[8][8];
@@ -33,12 +34,14 @@ public class Board {
             for (int j = 0; j < 8; j++)
                 if (this.board[i][j] != null)
                     this.board[i][j].reCheckMoves(this.board, i, j, this.wkl, this.bkl, this.lastMove);
+        isOver=false;
     }
     public Board(Board b){
         this.board=b.boardCopy();
         this.bkl=b.bkl;
         this.wkl=b.wkl;
         this.lastMove=b.lastMove;
+        this.isOver=b.isOver;
     }
 
     public boolean move(int rs, int cs, int rt, int ct) {
@@ -132,6 +135,8 @@ public class Board {
                 return false;
         }
         this.lastMove = rs * 1000 + cs * 100 + rt * 10 + ct;
+        if(!Utils.isThereMove(this,!this.board[rt][ct].isWhite))
+            isOver=true;
         return true;
     }
 
@@ -168,10 +173,11 @@ public class Board {
                     break;
             }
         }
-            this.board[rs][cs] = null;
-            this.lastMove = rs * 1000 + cs * 100 + rt * 10 + ct;
-            return true;
-
+        this.board[rs][cs] = null;
+        this.lastMove = rs * 1000 + cs * 100 + rt * 10 + ct;
+        if (!Utils.isThereMove(this, !this.board[rt][ct].isWhite))
+            isOver = true;
+        return true;
     }
     public Piece[][] boardCopy(){
         Piece[][] p= new Piece[8][8];
