@@ -3,30 +3,77 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class BetterStockFish {
-   public static  int boardValue(Board b,boolean isWhite){
-       int sum=0;
-       for(int i=0;i<8;i++)
-           for(int j=0;j<8;j++)
-               if(b.board[i][j]!=null){
-                   if(b.board[i][j].isWhite)
-                       sum+=b.board[i][j].v;
-                   else
-                       sum-=b.board[i][j].getValue();
-               }
-       if(isWhite&&!Utils.isThereMove(b,false)){
-           if(Utils.canBeTaken(b.board,b.bkl/10,b.bkl%10,false))
-               return 1000;
-           else
-               return 0;
-       }else if(!isWhite&&!Utils.isThereMove(b,true)){
-           if(Utils.canBeTaken(b.board,b.wkl/10,b.wkl%10,true))
-               return -1000;
-           else
-               return 0;
-       }
-       return sum;
+    public static double boardValue(Board b, boolean isWhite) {
+        double sum = 0;
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                if (b.board[i][j] != null) {
+                    sum += b.board[i][j].v;
+                }
+        //System.out.println("1: "+sum);
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                if (b.board[i][j] == null)
+                    continue;
+                if (!isWhite) {
+                    if (!b.board[i][j].isWhite)
+                        continue;
+                    int e = Utils.WCanBeTaken(b.board, i, j, true);
+                    if (e != -1) {
+                        if (Utils.canBeTaken(b.board, i, j, false)) {
+                            if (b.board[i][j].v > -b.board[e / 10][e % 10].v)
+                                sum -= (b.board[i][j].v - b.board[e / 10][e % 10].v);
+                        } else
+                            sum -= b.board[i][j].v;
+                    }
+                } else {
+                    if (b.board[i][j].isWhite)
+                        continue;
+                    int e = Utils.WCanBeTaken(b.board, i, j, false);
+                    if (e != -1) {
+                        if (Utils.canBeTaken(b.board, i, j, true)) {
+                            if (b.board[i][j].v < -b.board[e / 10][e % 10].v)
+                                sum -= (b.board[i][j].v -b.board[e / 10][e % 10].v);
+                        } else
+                            sum -= b.board[i][j].v;
+                    }
+
+                }
+            }
+        //System.out.println("2: "+sum);
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                if (b.board[i][j] == null)
+                    continue;
+                b.board[i][j].reCheckMoves(b.board, i, j, b.wkl, b.bkl, b.lastMove);
+                boolean[][] m = b.board[i][j].getMoves();
+                if (b.board[i][j].isWhite)
+                    for (int s = 0; s < 8; s++)
+                        for (int k = 0; k < 8; k++) {
+                            if (m[s][k])
+                                sum += 0.02;
+                        }
+                else
+                    for (int s = 0; s < 8; s++)
+                        for (int k = 0; k < 8; k++)
+                            if (m[s][k])
+                                sum -= 0.02;
+            }
+        //System.out.println("3: "+sum);
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                if(b.board[i][j] instanceof Pawn) {
+                    if (b.board[i][j].isWhite)
+                        sum += (i - 1) * 0.05;
+                    else
+                        sum -= (6-i) * 0.05;
+                }
+            }
+        //System.out.println("4: "+sum);
+        return sum;
+
     }
-    public static int minimax(Board b,boolean isWhite,int n,double alpha,double beta){
+    public static double minimax(Board b,boolean isWhite,int n,double alpha,double beta){
 
         if (b.isOver){
             if (!isWhite && Utils.canBeTaken(b.board,b.bkl/10,b.bkl%10,false)){
@@ -40,7 +87,7 @@ public class BetterStockFish {
         if (n==0){
             return boardValue(b, isWhite);
         }
-        int maxV=isWhite? -10000:10000;
+        double maxV=isWhite? -10000:10000;
         for(int i=0;i<8;i++) {
             for (int j = 0; j < 8; j++) {
                 if (b.board[i][j] != null && b.board[i][j].isWhite() == isWhite) {
@@ -57,7 +104,7 @@ public class BetterStockFish {
                             else
                                 board.move(i, j, k, s);
 
-                            int v = minimax(board,!isWhite,n-1,alpha,beta);
+                            double v = minimax(board,!isWhite,n-1,alpha,beta);
                             if(!isWhite&&v<alpha)
                                 return v;
                             if(isWhite&& v>beta)
@@ -81,7 +128,8 @@ public class BetterStockFish {
     public static void botMove(Board b,boolean isWhite){
         ExecutorService executorService = Executors.newFixedThreadPool(12); // Create a thread pool with 4 threads
         List<Callable<Result>> tasks = new ArrayList<>();
-       int bestM=0,bestV=isWhite? -10000:10000;
+       int bestM=0;
+       double bestV=isWhite? -10000:10000;
         for(int i=0;i<8;i++) {
             for (int j = 0; j < 8; j++) {
                 if (b.board[i][j] != null && b.board[i][j].isWhite() == isWhite) {
@@ -98,7 +146,7 @@ public class BetterStockFish {
                             else
                                 board.move(i, j, k, s);
                             int mm = 1000*i+100*j+10*k+s;
-                            tasks.add(() -> new Result(mm,  minimax(board,!isWhite,4,-10000,10000)));
+                            tasks.add(() -> new Result(mm,  minimax(board,!isWhite,3,-10000,10000)));
                         }
                     }
                 }
@@ -112,6 +160,7 @@ public class BetterStockFish {
             Result maxResult = null;
             for (Future<Result> future : futures) {
                 Result result = future.get();
+                System.out.println(result.getInput()+": "+result.output);
                 if (maxResult == null || (isWhite && result.getOutput() > maxResult.getOutput()) || (!isWhite && result.getOutput() < maxResult.getOutput())) {
                     maxResult = result;
                 }
@@ -136,9 +185,9 @@ public class BetterStockFish {
     }
     static class Result {
         private final int input;
-        private final int output;
+        private final double output;
 
-        public Result(int input, int output) {
+        public Result(int input, double output) {
             this.input = input;
             this.output = output;
         }
@@ -147,7 +196,7 @@ public class BetterStockFish {
             return input;
         }
 
-        public int getOutput() {
+        public double getOutput() {
             return output;
         }
     }

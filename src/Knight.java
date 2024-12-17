@@ -2,7 +2,7 @@ public class Knight extends Piece{
 
     public Knight(boolean isWhite){
         super(isWhite);
-        v=3;
+        v=isWhite ? 3:-3;;
     }
     public Knight copy(){
         Knight p=new Knight(isWhite);

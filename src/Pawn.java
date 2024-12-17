@@ -2,7 +2,7 @@ public class Pawn extends Piece{
 
     public Pawn(boolean isWhite){
         super(isWhite);
-        v=1;
+        v=isWhite ? 1:-1;
     }
     public Pawn copy(){
         Pawn p=new Pawn(isWhite);

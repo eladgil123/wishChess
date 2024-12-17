@@ -2,7 +2,7 @@ public class Queen extends Piece{
 
     public Queen(boolean isWhite){
         super(isWhite);
-        v=9;
+        v=isWhite ? 9:-9;;
     }
     public Queen copy() {
         Queen p = new Queen(isWhite);
